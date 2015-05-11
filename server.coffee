@@ -1,9 +1,10 @@
-express = require "express"
+express = require 'express'
+path = require 'path'
 app = express()
 server = require('http').Server(app);
 
 port = 3000
-publicDir = "#{__dirname}/built-app"
+publicDir = "#{__dirname}/dist"
 app.use(express.static(publicDir))
 
 # HTTP routes
