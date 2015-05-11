@@ -1,5 +1,5 @@
 example_view = require './lib/view.coffee'
-$ = require('jquery')
+$ = require 'jquery'
 
 init = ->
 	console.log 'main app launching'
