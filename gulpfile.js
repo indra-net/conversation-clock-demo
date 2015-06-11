@@ -9,6 +9,7 @@ var buffer = require('vinyl-buffer');
 var gutil = require('gulp-util');
 var sourcemaps = require('gulp-sourcemaps');
 var assign = require('lodash.assign');
+var nodemon = require('gulp-nodemon')
 
 //
 // config
@@ -28,15 +29,15 @@ var b = watchify(browserify(opts));
 b.transform(coffeeify);
 
 
-//
-// tasks
-//
 // register tasks
 gulp.task('js', bundle); // so you can run `gulp js` to build the file
 b.on('update', bundle); // on any dep update, runs the bundler
 b.on('log', gutil.log); // output build logs to terminal
 gulp.task('copy-assets', copyAssets);
 gulp.task('copy-html', copyHTML); 
+gulp.task('develop', develop);
+
+
 
 // watch for changes 
 gulp.task('watch', function() {
@@ -83,4 +84,16 @@ function copyHTML() {
 function copyAssets() {
   gulp.src(APP_ASSETS)
    .pipe(gulp.dest('./dist/assets'));
+}
+
+//
+// restart server with nodemon
+//
+function develop () {
+  nodemon({ script: 'server.coffee'
+          , ext: 'coffee'
+          , ignore: ['app/**.coffee'] })
+    .on('restart', function () {
+      console.log('restarted server!')
+    })
 }
