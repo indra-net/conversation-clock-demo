@@ -16,6 +16,7 @@ var nodemon = require('gulp-nodemon')
 var APP_HTML = ['./app/index.html']
 var APP_ASSETS = ['./app/assets/**']
 var APP_COFFEE = ['./app/**.coffee', './app/**/**.coffee']
+var APP_SERVER = 'server.coffee'
 
 // add custom browserify options here
 var browserifyOpts = {
@@ -38,12 +39,12 @@ gulp.task('copy-html', copyHTML);
 gulp.task('develop', develop);
 
 
-
 // watch for changes 
 gulp.task('watch', function() {
   gulp.watch(APP_COFFEE, ['js'])
   gulp.watch(APP_HTML, ['copy-html'])
   gulp.watch(APP_ASSETS, ['copy-assets'])
+  gulp.watch(APP_SERVER, ['develop'])
 })
 
 gulp.task('default', function() {
@@ -90,7 +91,7 @@ function copyAssets() {
 // restart server with nodemon
 //
 function develop () {
-  nodemon({ script: 'server.coffee'
+  nodemon({ script: APP_SERVER
           , ext: 'coffee'
           , ignore: ['app/**.coffee'] })
     .on('restart', function () {

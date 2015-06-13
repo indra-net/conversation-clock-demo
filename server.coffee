@@ -4,6 +4,7 @@ app = express()
 server = require('http').Server(app);
 bodyParser = require 'body-parser'
 logger = require 'express-logger'
+fs = require 'fs'
 
 #
 # express config
