@@ -1,11 +1,26 @@
-example_view = require './lib/view.coffee'
-$ = require 'jquery'
+docReady = require 'doc-ready'
+audioContext = require 'audio-context'
+Freezer = require 'freezer-js'
+microphoneManager = require './modules/MicrophoneManager/index.coffee'
 
 init = ->
-	console.log 'main app launching'
-	example_view.setup()
-	console.log 'main app done+launched'
+	# app store
+	store = new Freezer
+	    microphone: 
+	    	error: null
+	    	streaming: false
+	        # amplitudeStream: null
+	    user: 
+	        name: ''
+	        color: ''
 
-# launch the app
-$(document).ready(() ->
-	init() )
+	microphoneManager store.get().microphone, audioContext
+
+	store.on 'update', (state) ->
+		console.log 'new state', state
+
+	# console.log 'main app done+launched'
+
+
+# launch the app when the document is ready
+docReady init

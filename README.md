@@ -1,31 +1,11 @@
-# empty-webapp
-novice developer builds stack
+# indra conversation clock demo
 
-## setup 
+an indra demo based on Joan DiMicco's Conversation Clock
 
-make sure you have `node` and `npm` 
+## developing
 
-if you don't have gulp, `npm install --global gulp`
+requires: node, npm, coffee, gulp
 
-then just `npm install` and `coffee server.coffee`!
+`npm install` and `gulp`, then `coffee server.coffee`
 
-## directory structure
-
-here are the directories you'll deal with:
-
-```
-server.coffee
-logs/
-dist/
-app/ 
-    assets/ 
-    lib/ 
-    index.html
-    entry.coffee
-```
-
-`server.coffee` is the webserver
-
-`app/` contains all the webapp files - `entry.coffee` is the entrypoint into the app. all other coffee files go in `app/lib/`.
-
-`app/assets/` contains everything the app might need - css, images, etc
+to watch for changes while developing, `gulp watch` and `gulp develop`
