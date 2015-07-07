@@ -1,48 +1,49 @@
-connectStreamToScriptNode = (stream, audioctx) ->
+getUserMedia = require('getusermedia')
+Kefir = require('kefir')
+getAverageVolume = require('./getAverageVolume.coffee')
 
+microphoneAnalyzer = (stream, audioctx) ->
+	# TODO - setup compressor too
+	# compressor = require('./makeCompressor.coffee') audioctx
+	# microphone.connect compressor
+	# compressor.connect(analyzer)
 	# create audiocontext stream from microphone stream
 	microphone = audioctx.createMediaStreamSource stream
 	# microphone -> analyzer
 	analyzer = audioctx.createAnalyser()
 	analyzer.fftSize = 1024;
 	microphone.connect analyzer
+	return analyzer
 
-	# TODO - setup compressor too
-	# compressor = require('./makeCompressor.coffee') audioctx
-	# microphone.connect compressor
-	# compressor.connect(analyzer)
-	# analyzer -> javascriptNode
-
-	# javascriptNode gets average volume whenever 2048 frames have been sampled
-	javascriptNode = audioctx.createScriptProcessor(2048, 1, 1);
-	javascriptNode.onaudioprocess =  () ->
-		# console.log 'being called!!!'
-		array =  new Uint8Array(analyzer.frequencyBinCount)
-		analyzer.getByteFrequencyData array
-		console.log 'avg volume', require('./getAverageVolume.coffee') array
+analyzerScriptNode = (analyzer, audioctx) ->
+	# analyzer -> javascriptNode -> audioCtx
+	# javascriptNode gets average volume whenever 16384 frames have been sampled
+	javascriptNode = audioctx.createScriptProcessor(16384, 1, 1);
 	analyzer.connect javascriptNode
-	# hook javascript node to context
 	javascriptNode.connect audioctx.destination
-	
 	return javascriptNode
-	
 
-setup = (microphoneStore, audioctx) ->
+averageAmplitudesStream = (scriptNode, analyzerNode) ->
+	amplitudes = Kefir.stream (emitter) ->
+		scriptNode.onaudioprocess =  () ->
+			# console.log 'being called!!!'
+			array =  new Uint8Array(analyzerNode.frequencyBinCount)
+			analyzerNode.getByteFrequencyData array
+			emitter.emit getAverageVolume array
+	return amplitudes
 
+microphoneAmplitudesStream = (stream, audioctx) ->
+	analyzer = microphoneAnalyzer stream, audioctx
+	scriptNode = analyzerScriptNode analyzer, audioctx
+	return averageAmplitudesStream scriptNode, analyzer
+
+# AudioContext -> err/Kefir stream
+setup = (audioctx, cb) ->
 	# getUserMedia shim - get audio, 
-	require('getusermedia') {audio: true, video: false}, (err, stream) ->
-
+	getUserMedia {audio: true, video: false}, (err, stream) ->
 		# handle any error
-		if err 
-			microphoneStore.set 'error', err
-			return 0
-
-		# connect mic stream to a compressor
-		scriptNode = connectStreamToScriptNode stream, audioctx
-		# TODO - get a stream of amplitudes from the onaudioprocess callback
-
-		# set streaming to true
-		microphoneStore.set 'streaming', true
-		return 0
+		return err if err
+		# get stream of amplitudes from microphone
+		cb microphoneAmplitudesStream stream, audioctx
 
 module.exports = setup

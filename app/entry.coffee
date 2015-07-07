@@ -2,24 +2,31 @@ docReady = require 'doc-ready'
 audioContext = require 'audio-context'
 Freezer = require 'freezer-js'
 microphoneManager = require './modules/MicrophoneManager/index.coffee'
+Kefir = require 'kefir'
+$ = require 'jquery'
+_ = require 'lodash'
+postJson = require 'post-json-nicely'
 
 init = ->
-	# app store
-	store = new Freezer
-	    microphone: 
-	    	error: null
-	    	streaming: false
-	        # amplitudeStream: null
-	    user: 
-	        name: ''
-	        color: ''
 
-	microphoneManager store.get().microphone, audioContext
+	amplitudesStream = new Kefir.pool()
+	microphoneManager audioContext, (stream) => amplitudesStream.plug stream 
 
-	store.on 'update', (state) ->
-		console.log 'new state', state
+	# TODO
+	# setupSelectionScreen amplitudeStream, (userConfiguration) ->
+		# faucet = ...
+		# amplitudeStream.onValue (amp) ->
+		# setupVisualizer faucet
 
-	# console.log 'main app done+launched'
+	# dummmy user config for now
+	userConfiguration = {name:'nick', color:'#fe0fe0'}
+
+	amplitudesStream.throttle(300).onValue (amp) ->
+		json = _.extend userConfiguration, {amplitude: amp}
+		json = _.extend json, {'type': 'microphoneAmplitude'}
+		postJson $, 'http://indra.webfactional.com/', json
+
+	return 0
 
 
 # launch the app when the document is ready
