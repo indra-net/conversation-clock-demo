@@ -17,8 +17,8 @@ microphoneAnalyzer = (stream, audioctx) ->
 
 analyzerScriptNode = (analyzer, audioctx) ->
 	# analyzer -> javascriptNode -> audioCtx
-	# javascriptNode gets average volume whenever 16384 frames have been sampled
-	javascriptNode = audioctx.createScriptProcessor(16384, 1, 1);
+	# javascriptNode gets average volume whenever 1024 frames have been sampled
+	javascriptNode = audioctx.createScriptProcessor(1024, 1, 1);
 	analyzer.connect javascriptNode
 	javascriptNode.connect audioctx.destination
 	return javascriptNode

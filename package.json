@@ -41,6 +41,9 @@
     "kefir": "^2.7.0",
     "lodash": "^3.8.0",
     "post-json-nicely": "^0.1.2",
-    "pusher-node-client": "0.0.8"
+    "pusher-client": "^0.2.3",
+    "pusher-js": "^3.0.0",
+    "pusher-node-client": "0.0.8",
+    "request-json": "^0.5.3"
   }
 }
