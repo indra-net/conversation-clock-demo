@@ -33,6 +33,7 @@
   "dependencies": {
     "audio-context": "^0.1.0",
     "body-parser": "^1.12.4",
+    "compute-stdev": "^1.0.0",
     "doc-ready": "^1.0.3",
     "express": "^4.12.3",
     "freezer-js": "^0.5.2",
