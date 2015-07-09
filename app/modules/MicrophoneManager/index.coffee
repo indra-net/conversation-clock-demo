@@ -21,18 +21,17 @@ analyzerScriptNode = (analyzer, audioctx) ->
 averageAmplitudesStream = (scriptNode, analyzerNode) ->
 	return Kefir.stream (emitter) ->
 		scriptNode.onaudioprocess =  () ->
-			# console.log 'being called!!!'
-			array =  new Uint8Array(analyzerNode.frequencyBinCount)
-			analyzerNode.getByteFrequencyData array
-			emitter.emit getAverageVolume array
+			emitter.emit getAverageVolume(analyzerNode)
+			
 
 microphoneAmplitudesStream = (stream, audioctx) ->
 	analyzer = microphoneAnalyzer stream, audioctx
 	scriptNode = analyzerScriptNode analyzer, audioctx
 	return averageAmplitudesStream scriptNode, analyzer
 
-# AudioContext -> err/void
-setup = (audioctx, cb) ->
+# take an audio context,
+# executes cb on a stream of amplitude values from the mic
+getAccessToMicrophone = (audioctx, cb) ->
 	# getUserMedia shim - get audio, 
 	getUserMedia {audio: true, video: false}, (err, stream) ->
 		# handle any error
@@ -40,4 +39,4 @@ setup = (audioctx, cb) ->
 		# get stream of amplitudes from microphone
 		cb microphoneAmplitudesStream stream, audioctx
 
-module.exports = setup
+module.exports = getAccessToMicrophone

@@ -3,7 +3,7 @@ docReady = require 'doc-ready'
 audioContext = require 'audio-context'
 microphoneManager = require './modules/MicrophoneManager/index.coffee'
 getLoudestMicStream = require './modules/LoudestMicStream.coffee'
-shareData = require './modules/shareData.coffee'
+publish = require './modules/ShareData.coffee'
 # views
 joinConvoView = require './views/JoinConvoView.coffee'
 convoViz = require './views/ConvoViz.coffee'
@@ -14,12 +14,12 @@ init = ->
 	$body.html		'<h2>share your microphone!</h2>'
 
 	# request microphone access
-	# cb is executed when we have a stream of mic amplitudes
+	# when we get access to the mic, we execute the callback on a stream of amplitudes from the microphone 
 	microphoneManager audioContext, (amplitudesStream) => 
 		# join convo view
 		# the cb is executed when user selects a color + hits join
 		joinConvoView (color) => 
-			shareData(color, amplitudesStream)
+			publish(color, amplitudesStream)
 			loudestMicStream = getLoudestMicStream()
 			convoViz(loudestMicStream)
 		

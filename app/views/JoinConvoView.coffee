@@ -1,27 +1,26 @@
-Kefir 	= require 'Kefir'
-_ 		= require 'lodash'
 $		= require 'jquery'
 
 loginTemplate = () ->
 	'''
-	<input id="colorPicker" type="color"/>
-	<button id = "joinConversationButton">Join!</button>
+	<h2>Choose a color to represent your microphone!:</h2>
+	<button style="background-color:#fff000" class="selectColorButton" />
+	<button style="background-color:#000fff" class="selectColorButton" />
+	<button style="background-color:#ff0000" class="selectColorButton" />
+	<button style="background-color:#00ff00" class="selectColorButton" />
+	<button style="background-color:#f000ff" class="selectColorButton" />
 	'''
 
 setup = (cb) ->
 
-	$body 			= $(document.body)
-	
 	# setup the template
-	$body.html loginTemplate()
-
-	$joinButton 			= $ '#joinConversationButton'
-	$colorPicker 			= $ '#colorPicker'
+	$body 				= $(document.body)
+	$body.html(loginTemplate())
+	$selectColorButton	= $('.selectColorButton')
 	
 	# when join button is pressed,
 	# call cb on the prodcuced config object
-	$joinButton.on 'click', () ->
-		color = $colorPicker.val()
-		cb color
+	$selectColorButton.on 'click', (e) ->
+		selectedColor = $(e.target).css('background-color')
+		cb(selectedColor)
 
 module.exports = setup

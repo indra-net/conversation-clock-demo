@@ -50,8 +50,8 @@ buffer = {}
 addToBuffer = (data) ->
     unixtime = Date.now()
     buffer[unixtime] = data
-    # keep items in buffer for 1 second
-    delay 1000, () -> delete buffer[unixtime]
+    # keep items in buffer for 300 second
+    delay 300, () -> delete buffer[unixtime]
 
 # listen for microphone amplitude data
 pusherClient.on 'connect', () ->
@@ -67,14 +67,12 @@ postLoudest = (r) -> client.post '/', r, handlePostErrors
 # STD threshold
 thresholdSigma = 7.0
 findLoudest = -> 
+    return _.max buffer, (reading) -> reading.amplitude
     # DEBUG - what are the standard deviations?
-    std = sigma _.pluck buffer, 'amplitude'
-    console.log std
-    if thresholdSigma < std 
-        # get the reading with the highest amplitude
-        return _.max buffer, (reading) -> reading.amplitude
-    else 
-        {color:'#000'}
+    # std = sigma _.pluck buffer, 'amplitude'
+    # console.log std
+    # if thresholdSigma < std 
+    # else {color:'#000'}
 repeatedly period, () -> 
     # get the loudest reading
     loudest = findLoudest()
@@ -85,3 +83,4 @@ repeatedly period, () ->
 
 # connect to pusher
 pusherClient.connect()
+
